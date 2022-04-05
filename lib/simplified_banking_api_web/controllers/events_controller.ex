@@ -1,8 +1,8 @@
-defmodule SimplifiedBankingApiWeb.AccountsController do
+defmodule SimplifiedBankingApiWeb.EventsController do
   @moduledoc """
-  Accounts controller.
+  Events controller.
 
-  This module is responsible to handle all incoming requests related to accounts.
+  This module is responsible to handle all incoming events.
   """
   use SimplifiedBankingApiWeb, :controller
 
@@ -26,7 +26,8 @@ defmodule SimplifiedBankingApiWeb.AccountsController do
         |> put_status(201)
         |> render("show.json", %{account: account})
 
-        # TODO: escrever o cenário de erro
+      error ->
+        error
     end
   end
 end

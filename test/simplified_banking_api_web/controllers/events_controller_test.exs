@@ -1,4 +1,4 @@
-defmodule SimplifiedBankingApiWeb.AccountsControllerTest do
+defmodule SimplifiedBankingApiWeb.EventsControllerTest do
   use SimplifiedBankingApiWeb.ConnCase, async: false
 
   import SimplifiedBankingApi.Factory
