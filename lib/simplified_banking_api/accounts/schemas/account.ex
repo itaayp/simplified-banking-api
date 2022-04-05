@@ -23,6 +23,7 @@ defmodule SimplifiedBankingApi.Accounts.Schemas.Account do
     model
     |> cast(params, @required)
     |> validate_required(@required)
+    |> unique_constraint(:id, name: "accounts_pkey", message: "The account_id is already in use")
   end
 
   @doc false

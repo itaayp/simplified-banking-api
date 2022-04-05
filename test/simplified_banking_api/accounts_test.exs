@@ -28,4 +28,22 @@ defmodule SimplifiedBankingApi.AccountsTest do
       assert 101 == account.balance
     end
   end
+
+  describe "reset/0" do
+    test "resets all the database data" do
+      insert(:account, id: 1)
+
+      insert_list(8, :account)
+
+      assert 9 == Repo.aggregate(Account, :count)
+
+      Accounts.reset_data()
+
+      # the database is empty
+      assert [] == Repo.all(Account, [])
+
+      # can create a new account with the same id that was previously used
+      insert(:account, id: 1)
+    end
+  end
 end

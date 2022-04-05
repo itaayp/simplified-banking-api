@@ -1,5 +1,5 @@
 defmodule SimplifiedBankingApiWeb.AccountsControllerTest do
-  use SimplifiedBankingApiWeb.ConnCase, async: true
+  use SimplifiedBankingApiWeb.ConnCase, async: false
 
   import SimplifiedBankingApi.Factory
 
@@ -70,6 +70,21 @@ defmodule SimplifiedBankingApiWeb.AccountsControllerTest do
 
       assert account_id == account.id
       assert 101 == account.balance
+    end
+  end
+
+  describe "POST /reset" do
+    test "succeds reseting the API", ctx do
+      insert_list(7, :account)
+
+      assert 7 == Repo.aggregate(Account, :count)
+
+      assert ctx.conn
+             |> post("/reset", %{})
+             |> response(200)
+
+      # the database is empty
+      assert [] == Repo.all(Account, [])
     end
   end
 end
