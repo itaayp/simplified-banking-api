@@ -48,9 +48,10 @@ defmodule SimplifiedBankingApi.Accounts do
   end
 
   defp create_account(account_id, balance) do
-    account_changeset = Account.changeset(%{id: account_id, balance: balance})
-
-    case Repo.insert(account_changeset) do
+    %{id: account_id, balance: balance}
+    |> Account.changeset()
+    |> Repo.insert()
+    |> case do
       {:ok, account} ->
         Logger.info("#{__MODULE__}: Account #{account_id} created")
         account
@@ -67,7 +68,9 @@ defmodule SimplifiedBankingApi.Accounts do
 
   def reset_data do
     case Repo.delete_all(Account) do
-      {rows, nil} when is_integer(rows) -> {:ok, :success}
+      {rows, nil} when is_integer(rows) ->
+        {:ok, :success}
+
       error ->
         Logger.error("Failed to reset the API. Error: #{inspect(error)}")
 

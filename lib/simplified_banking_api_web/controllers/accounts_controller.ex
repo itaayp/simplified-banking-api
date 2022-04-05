@@ -26,7 +26,7 @@ defmodule SimplifiedBankingApiWeb.AccountsController do
         |> put_status(201)
         |> render("show.json", %{account: account})
 
-      # TODO: escrever o cenário de erro
+        # TODO: escrever o cenário de erro
     end
   end
 end

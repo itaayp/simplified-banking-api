@@ -75,21 +75,16 @@ defmodule SimplifiedBankingApiWeb.AccountsControllerTest do
 
   describe "POST /reset" do
     test "succeds reseting the API", ctx do
-      insert(:account, id: 1)
+      insert_list(7, :account)
 
-      insert_list(8, :account)
-
-      assert 9 == Repo.aggregate(Account, :count)
+      assert 7 == Repo.aggregate(Account, :count)
 
       assert ctx.conn
-        |> post("/reset", %{})
-        |> response(200)
+             |> post("/reset", %{})
+             |> response(200)
 
       # the database is empty
       assert [] == Repo.all(Account, [])
-
-      # can create a new account with the same id that was previously used
-      insert(:account, id: 1)
     end
   end
 end
