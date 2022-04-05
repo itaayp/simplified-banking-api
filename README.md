@@ -37,22 +37,6 @@ GET /balance?account_id=1234
 
 
 --
-# Create account with initial balance
-
-POST /event {"type":"deposit", "destination":"100", "amount":10}
-
-201 {"destination": {"id":"100", "balance":10}}
-
-
---
-# Deposit into existing account
-
-POST /event {"type":"deposit", "destination":"100", "amount":10}
-
-201 {"destination": {"id":"100", "balance":20}}
-
-
---
 # Get balance for existing account
 
 GET /balance?account_id=100
