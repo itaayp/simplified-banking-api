@@ -14,7 +14,7 @@ defmodule SimplifiedBankingApiWeb.ResetController do
   @spec reset(conn :: Plug.Conn.t(), params :: map()) :: Plug.Conn.t()
   def reset(conn, _params) do
     case Accounts.reset_data() do
-      {:ok, :success} -> put_status(conn, 200)
+      {:ok, :success} -> send_resp(conn, 200, "OK")
       error -> error
     end
   end
