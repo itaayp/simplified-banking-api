@@ -18,5 +18,7 @@ defmodule SimplifiedBankingApiWeb.Router do
     pipe_through :api
 
     post "/event", AccountsController, :handle_event
+
+    post "/reset", ResetController, :reset
   end
 end
