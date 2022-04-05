@@ -64,4 +64,14 @@ defmodule SimplifiedBankingApi.Accounts do
         Repo.rollback(reason)
     end
   end
+
+  def reset_data do
+    case Repo.delete_all(Account) do
+      {rows, nil} when is_integer(rows) -> {:ok, :success}
+      error ->
+        Logger.error("Failed to reset the API. Error: #{inspect(error)}")
+
+        {:error, :failed_to_reset}
+    end
+  end
 end
