@@ -27,11 +27,10 @@ defmodule SimplifiedBankingApi.Accounts do
           {:ok, Account.t()} | {:error, atom()}
   def deposit(account_id, amount) do
     Repo.transaction(fn ->
-      with %Account{} = account <- Repo.get(Account, account_id),
-           changeset <- Account.update_changeset(account, %{balance: account.balance + amount}),
-           {:ok, account} <- Repo.update(changeset) do
-        account
-      else
+      case operate_account(account_id, amount, :sum) do
+        {:ok, %Account{} = account} ->
+          account
+
         nil ->
           create_account(account_id, amount)
 
@@ -84,11 +83,10 @@ defmodule SimplifiedBankingApi.Accounts do
           {:ok, Account.t()} | {:error, atom()}
   def withdraw(account_id, amount) do
     Repo.transaction(fn ->
-      with %Account{} = account <- Repo.get(Account, account_id),
-           changeset <- Account.update_changeset(account, %{balance: account.balance - amount}),
-           {:ok, account} <- Repo.update(changeset) do
-        account
-      else
+      case operate_account(account_id, amount, :subtract) do
+        {:ok, %Account{} = account} ->
+          account
+
         nil ->
           Logger.error("Account not found")
           Repo.rollback(:not_found)
@@ -104,6 +102,18 @@ defmodule SimplifiedBankingApi.Accounts do
       end
     end)
   end
+
+  defp operate_account(account_id, amount, operation) when operation in [:sum, :subtract] do
+    with %Account{} = account <- Repo.get(Account, account_id),
+         changeset <-
+           Account.update_changeset(account, update_balance(account.balance, amount, operation)) do
+      Repo.update(changeset)
+    end
+  end
+
+  defp update_balance(balance, amount, operation)
+  defp update_balance(balance, amount, :sum), do: %{balance: balance + amount}
+  defp update_balance(balance, amount, :subtract), do: %{balance: balance - amount}
 
   @doc """
   Gets the account balance.
