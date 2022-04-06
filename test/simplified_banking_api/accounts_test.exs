@@ -29,6 +29,18 @@ defmodule SimplifiedBankingApi.AccountsTest do
     end
   end
 
+  describe "get_balance/1" do
+    test "successfully get the account balance" do
+      insert(:account, id: 1, balance: 1000)
+
+      assert {:ok, 1000} == Accounts.get_balance(1)
+    end
+
+    test "fails if the account doesn't exist" do
+      assert {:error, :not_found} == Accounts.get_balance(1)
+    end
+  end
+
   describe "reset/0" do
     test "resets all the database data" do
       insert(:account, id: 1)

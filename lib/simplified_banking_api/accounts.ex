@@ -11,7 +11,7 @@ defmodule SimplifiedBankingApi.Accounts do
 
   @doc """
   Deposit money into an account.
-  If the account doesn't exists, it creates the account, and then deposit the amount
+  If the account doesn't exists, it creates the account, and then deposit the amount.
 
   ## Examples
       iex> Accounts.deposit(1234, 100)
@@ -64,6 +64,36 @@ defmodule SimplifiedBankingApi.Accounts do
 
         Repo.rollback(reason)
     end
+  end
+
+  @doc """
+  Gets the account balance.
+  If the account doesn't exists, the function return is `{:error, :not_found}`.
+
+  ## Examples
+      # when the account exists
+      iex (1)> Accounts.get_balance(1234)
+      {:ok, 100}
+
+      # when the account doesn't exists
+      iex (1)> Accounts.get_balance(9999)
+      {:error, :not_found}
+  """
+  @spec get_balance(account_id :: integer()) :: {:ok, integer()} | {:error, :not_found}
+  def get_balance(account_id) do
+    Repo.transaction(fn ->
+      case Repo.one(Account, id: account_id) do
+        %Account{balance: balance} ->
+          Logger.info("#{__MODULE__}: Fetched balance account balance")
+
+          balance
+
+        nil ->
+          Logger.error("Account not found")
+
+          Repo.rollback(:not_found)
+      end
+    end)
   end
 
   def reset_data do
