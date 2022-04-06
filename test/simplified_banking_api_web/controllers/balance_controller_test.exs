@@ -12,9 +12,9 @@ defmodule SimplifiedBankingApiWeb.BalanceControllerTest do
       insert(:account, id: 1, balance: 1000)
 
       assert "1000" ==
-             ctx.conn
-             |> get("/balance", %{account_id: 1})
-             |> response(200)
+               ctx.conn
+               |> get("/balance", %{account_id: 1})
+               |> response(200)
     end
 
     test "fails to get the balance if the account doesn't exist'", ctx do

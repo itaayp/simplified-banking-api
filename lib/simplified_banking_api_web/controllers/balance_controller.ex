@@ -16,7 +16,8 @@ defmodule SimplifiedBankingApiWeb.BalanceController do
   @spec get_balance(conn :: Plug.Conn.t(), params :: map()) :: Plug.Conn.t()
   def get_balance(conn, %{"account_id" => account_id}) do
     case Accounts.get_balance(account_id) do
-      {:ok, balance} -> send_resp(conn, 200, "#{balance}")
+      {:ok, balance} ->
+        send_resp(conn, 200, "#{balance}")
 
       error ->
         error
