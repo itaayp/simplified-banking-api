@@ -20,30 +20,7 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
 
 
 # Features
---
-# Reset state before starting tests
 
-POST /reset
-
-200 OK
-
-
---
-# Get balance for non-existing account
-
-GET /balance?account_id=1234
-
-404 0
-
-
---
-# Get balance for existing account
-
-GET /balance?account_id=100
-
-200 20
-
---
 # Withdraw from non-existing account
 
 POST /event {"type":"withdraw", "origin":"200", "amount":10}
