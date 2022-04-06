@@ -29,6 +29,22 @@ defmodule SimplifiedBankingApi.AccountsTest do
     end
   end
 
+  describe "withdraw/2" do
+    test "withdraw the amount from an account" do
+      account_id = 123
+
+      insert(:account, id: account_id, balance: 100)
+
+      assert {:ok, account} = Accounts.withdraw(account_id, 30)
+
+      assert 70 == account.balance
+    end
+
+    test "fails if the account doesn't exist" do
+      assert {:error, :not_found} = Accounts.withdraw(123, 1000)
+    end
+  end
+
   describe "get_balance/1" do
     test "successfully get the account balance" do
       insert(:account, id: 1, balance: 1000)

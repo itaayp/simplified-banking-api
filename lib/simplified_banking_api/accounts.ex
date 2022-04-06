@@ -67,6 +67,45 @@ defmodule SimplifiedBankingApi.Accounts do
   end
 
   @doc """
+  Withdraw money from an account.
+  If the `origin` doesn't match with any account_id, the function returns the tuple `{:error, :not_found}`.
+
+  ## Examples
+      iex> Accounts.withdraw(1234, 10)
+      %{:ok, %SimplifiedBankingApi.Accounts.Schemas.Account{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "accounts">,
+        balance: 90,
+        id: 1234,
+        inserted_at: ~N[2022-04-05 03:26:44],
+        updated_at: ~N[2022-06-13 12:33:48]
+      }}
+  """
+  @spec withdraw(account_id :: integer(), amount :: integer()) ::
+          {:ok, Account.t()} | {:error, atom()}
+  def withdraw(account_id, amount) do
+    Repo.transaction(fn ->
+      with %Account{} = account <- Repo.get(Account, account_id),
+           changeset <- Account.update_changeset(account, %{balance: account.balance - amount}),
+           {:ok, account} <- Repo.update(changeset) do
+        account
+      else
+        nil ->
+          Logger.error("Account not found")
+          Repo.rollback(:not_found)
+
+        {:error, reason} ->
+          Logger.error("""
+          Failed to withdraw.
+          Account id: #{inspect(account_id)}.
+          Reason: #{inspect(reason)}.
+          """)
+
+          Repo.rollback(reason)
+      end
+    end)
+  end
+
+  @doc """
   Gets the account balance.
   If the account doesn't exists, the function return is `{:error, :not_found}`.
 
