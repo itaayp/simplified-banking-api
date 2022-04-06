@@ -32,4 +32,17 @@ defmodule SimplifiedBankingApiWeb.EventsController do
         error
     end
   end
+
+  def handle_event(conn, %{"type" => "withdraw", "origin" => _, "amount" => _} = params) do
+    case Accounts.withdraw(Map.get(params, "origin"), Map.get(params, "amount")) do
+      {:ok, account} ->
+        conn
+        |> put_view(AccountsView)
+        |> put_status(201)
+        |> render("show.json", %{account: account})
+
+      error ->
+        error
+    end
+  end
 end
