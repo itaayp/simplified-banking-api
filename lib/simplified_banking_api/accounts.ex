@@ -96,15 +96,22 @@ defmodule SimplifiedBankingApi.Accounts do
     end)
   end
 
-  def reset_data do
-    case Repo.delete_all(Account) do
-      {rows, nil} when is_integer(rows) ->
-        {:ok, :success}
+  @doc """
+  Erases all the existing entries in `accounts` table.
+  """
+  @spec reset_accounts_table :: {:ok, :success} | {:error, :failed_to_reset}
+  def reset_accounts_table do
+    Repo.transaction(fn ->
+      case Repo.delete_all(Account) do
+        {rows, nil} when is_integer(rows) ->
+          Logger.info("#{__MODULE__}: All the entries in accounts table were deleted")
+          :success
 
-      error ->
-        Logger.error("Failed to reset the API. Error: #{inspect(error)}")
+        error ->
+          Logger.error("Failed to reset the API. Error: #{inspect(error)}")
 
-        {:error, :failed_to_reset}
-    end
+          Repo.rollback(:failed_to_reset)
+      end
+    end)
   end
 end

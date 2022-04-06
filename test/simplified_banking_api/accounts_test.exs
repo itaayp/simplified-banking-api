@@ -49,7 +49,7 @@ defmodule SimplifiedBankingApi.AccountsTest do
 
       assert 9 == Repo.aggregate(Account, :count)
 
-      Accounts.reset_data()
+      Accounts.reset_accounts_table()
 
       # the database is empty
       assert [] == Repo.all(Account, [])
