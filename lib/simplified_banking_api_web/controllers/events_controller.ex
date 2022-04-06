@@ -10,6 +10,8 @@ defmodule SimplifiedBankingApiWeb.EventsController do
 
   alias SimplifiedBankingApiWeb.AccountsView
 
+  action_fallback SimplifiedBankingApiWeb.FallbackController
+
   @doc """
   Handle events.
   An event can be one of these possible types:

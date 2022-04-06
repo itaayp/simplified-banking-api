@@ -8,6 +8,8 @@ defmodule SimplifiedBankingApiWeb.ResetController do
 
   alias SimplifiedBankingApi.Accounts
 
+  action_fallback SimplifiedBankingApiWeb.FallbackController
+
   @doc """
   Resets all the API data.
   """
