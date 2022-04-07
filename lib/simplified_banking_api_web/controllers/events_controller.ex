@@ -45,4 +45,17 @@ defmodule SimplifiedBankingApiWeb.EventsController do
         error
     end
   end
+
+  def handle_event(conn, %{"type" => "transfer", "origin" => _, "amount" => _, "destination" => _} = params) do
+    case Accounts.transfer(Map.get(params, "origin"), Map.get(params, "amount"), Map.get(params, "destination")) do
+      {:ok, origin_account, destination_account} ->
+        conn
+        |> put_view(AccountsView)
+        |> put_status(201)
+        |> render("transfer.json", %{origin_account: origin_account, destination_account: destination_account})
+
+      error ->
+        error
+    end
+  end
 end
