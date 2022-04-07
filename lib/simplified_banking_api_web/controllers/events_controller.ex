@@ -26,7 +26,7 @@ defmodule SimplifiedBankingApiWeb.EventsController do
         conn
         |> put_view(AccountsView)
         |> put_status(201)
-        |> render("show.json", %{account: account})
+        |> render("deposit.json", %{account: account})
 
       error ->
         error
@@ -39,7 +39,7 @@ defmodule SimplifiedBankingApiWeb.EventsController do
         conn
         |> put_view(AccountsView)
         |> put_status(201)
-        |> render("show.json", %{account: account})
+        |> render("withdraw.json", %{account: account})
 
       error ->
         error
