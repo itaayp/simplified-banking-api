@@ -50,7 +50,8 @@ defmodule SimplifiedBankingApi.AccountsTest do
     end
 
     test "transfer the amount from the origin_account to the destination_account", ctx do
-      assert {:ok, origin, destination} = Accounts.transfer(ctx.origin_account, 30, ctx.destination_account)
+      assert {:ok, origin, destination} =
+               Accounts.transfer(ctx.origin_account, 30, ctx.destination_account)
 
       assert 70 == origin.balance
       assert 130 == destination.balance

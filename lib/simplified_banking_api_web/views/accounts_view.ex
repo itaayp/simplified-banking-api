@@ -14,6 +14,9 @@ defmodule SimplifiedBankingApiWeb.AccountsView do
   end
 
   def render("transfer.json", %{origin_account: origin, destination_account: destination}) do
-    %{origin: %{id: origin.id, balance: origin.balance}, destination: %{id: destination.id, balance: destination.balance}}
+    %{
+      origin: %{id: origin.id, balance: origin.balance},
+      destination: %{id: destination.id, balance: destination.balance}
+    }
   end
 end

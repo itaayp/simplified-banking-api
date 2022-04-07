@@ -3,8 +3,8 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
 
   import SimplifiedBankingApi.Factory
 
-  alias SimplifiedBankingApi.Repo
   alias SimplifiedBankingApi.Accounts.Schemas.Account
+  alias SimplifiedBankingApi.Repo
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -117,7 +117,10 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
         destination: ctx.destination.id
       }
 
-      assert %{"origin" => %{"balance" => 40, "id" => origin_id}, "destination" => %{"balance" => 160, "id" => destination_id}} =
+      assert %{
+               "origin" => %{"balance" => 40, "id" => origin_id},
+               "destination" => %{"balance" => 160, "id" => destination_id}
+             } =
                ctx.conn
                |> post("/event", params)
                |> json_response(201)
