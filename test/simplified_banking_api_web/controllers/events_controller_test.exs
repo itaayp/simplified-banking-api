@@ -78,7 +78,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
         amount: 60
       }
 
-      assert %{"destination" => %{"balance" => 40, "id" => account_id}} =
+      assert %{"origin" => %{"balance" => 40, "id" => account_id}} =
                ctx.conn
                |> post("/event", params)
                |> json_response(201)
@@ -112,9 +112,9 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
     test "transfer the amount from the origin account to the destination account", ctx do
       params = %{
         type: "transfer",
-        origin: ctx.origin.id,
+        origin: ctx.origin,
         amount: 60,
-        destination: ctx.destination.id
+        destination: ctx.destination
       }
 
       assert %{
@@ -125,8 +125,8 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
                |> post("/event", params)
                |> json_response(201)
 
-      assert origin_id == ctx.origin.id
-      assert destination_id == ctx.destination.id
+      assert origin_id == ctx.origin
+      assert destination_id == ctx.destination
     end
 
     test "fails if the origin account doesn't exist'", ctx do
