@@ -6,8 +6,8 @@ defmodule SimplifiedBankingApi.Accounts do
   """
   require Logger
 
-  alias SimplifiedBankingApi.Repo
   alias SimplifiedBankingApi.Accounts.Schemas.Account
+  alias SimplifiedBankingApi.Repo
 
   @doc """
   Deposit money into an account.
@@ -130,12 +130,18 @@ defmodule SimplifiedBankingApi.Accounts do
       }
     }
   """
-  @spec transfer(origin_account :: integer(), amount :: integer(), destination_account :: integer()) ::
+  @spec transfer(
+          origin_account :: integer(),
+          amount :: integer(),
+          destination_account :: integer()
+        ) ::
           {:ok, origin :: Account.t(), destination :: Account.t()} | {:error, atom()}
   def transfer(origin_account, amount, destination_account) do
     Repo.transaction(fn ->
-      with {:origin, {:ok, %Account{} = origin}} <- {:origin, operate_account(origin_account, amount, :subtract)},
-      {:destination, {:ok, %Account{} = destination}} <- {:destination, operate_account(destination_account, amount, :sum)} do
+      with {:origin, {:ok, %Account{} = origin}} <-
+             {:origin, operate_account(origin_account, amount, :subtract)},
+           {:destination, {:ok, %Account{} = destination}} <-
+             {:destination, operate_account(destination_account, amount, :sum)} do
         {origin, destination}
       else
         {:origin, nil} ->

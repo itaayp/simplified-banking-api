@@ -3,8 +3,8 @@ defmodule SimplifiedBankingApiWeb.ResetControllerTest do
 
   import SimplifiedBankingApi.Factory
 
-  alias SimplifiedBankingApi.Repo
   alias SimplifiedBankingApi.Accounts.Schemas.Account
+  alias SimplifiedBankingApi.Repo
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}

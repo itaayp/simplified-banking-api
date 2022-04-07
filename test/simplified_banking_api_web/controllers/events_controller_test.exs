@@ -3,8 +3,8 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
 
   import SimplifiedBankingApi.Factory
 
-  alias SimplifiedBankingApi.Repo
   alias SimplifiedBankingApi.Accounts.Schemas.Account
+  alias SimplifiedBankingApi.Repo
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -78,7 +78,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
         amount: 60
       }
 
-      assert %{"destination" => %{"balance" => 40, "id" => account_id}} =
+      assert %{"origin" => %{"balance" => 40, "id" => account_id}} =
                ctx.conn
                |> post("/event", params)
                |> json_response(201)
@@ -102,34 +102,39 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
   end
 
   describe "POST /event {type: 'transfer'}" do
-    test "transfer the amount from the origin account to the destination account", ctx do
-      origin = insert(:account)
-      destination = insert(:account)
+    setup do
+      origin_account_id = insert(:account, balance: 100).id
+      destination_account_id = insert(:account, balance: 100).id
 
+      {:ok, origin: origin_account_id, destination: destination_account_id}
+    end
+
+    test "transfer the amount from the origin account to the destination account", ctx do
       params = %{
         type: "transfer",
-        origin: origin.id,
+        origin: ctx.origin,
         amount: 60,
-        destination: destination.id
+        destination: ctx.destination
       }
 
-      assert %{"origin" => %{"balance" => 40, "id" => origin_id}, "destination" => %{"balance" => 160, "id" => destination_id}} =
+      assert %{
+               "origin" => %{"balance" => 40, "id" => origin_id},
+               "destination" => %{"balance" => 160, "id" => destination_id}
+             } =
                ctx.conn
                |> post("/event", params)
                |> json_response(201)
 
-      assert origin_id == origin.id
-      assert destination_id == destination.id
+      assert origin_id == ctx.origin
+      assert destination_id == ctx.destination
     end
 
     test "fails if the origin account doesn't exist'", ctx do
-      destination_id = insert(:account).id
-
       params = %{
         type: "transfer",
         origin: 123,
         amount: 60,
-        destination: destination_id
+        destination: ctx.destination
       }
 
       assert ctx.conn
@@ -138,11 +143,9 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
     end
 
     test "fails if the destination account doesn't exist'", ctx do
-      origin_id = insert(:account).id
-
       params = %{
         type: "transfer",
-        origin: origin_id,
+        origin: ctx.origin,
         amount: 60,
         destination: 123
       }
