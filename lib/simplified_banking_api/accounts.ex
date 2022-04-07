@@ -67,7 +67,7 @@ defmodule SimplifiedBankingApi.Accounts do
 
   @doc """
   Withdraw money from an account.
-  If the `origin` doesn't match with any account_id, the function returns the tuple `{:error, :not_found}`.
+  If the `origin` doesn't match with any account_id, the function returns `{:error, :not_found}`.
 
   ## Examples
       iex> Accounts.withdraw(1234, 10)
@@ -101,6 +101,66 @@ defmodule SimplifiedBankingApi.Accounts do
           Repo.rollback(reason)
       end
     end)
+  end
+
+  @doc """
+  Transfers the `amount` from the `origin_account` to the `destination_account`.
+  If the `origin_account`, or the `destination_account` don't match with any account_id,
+  so the function returns `{:error, :not_found}`.
+
+  ## Examples
+      iex> Accounts.transfer(1234, 10, 5678)
+      %{
+        :ok,
+        %SimplifiedBankingApi.Accounts.Schemas.Account{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "accounts">,
+        balance: 90,
+        id: 1234,
+        inserted_at: ~N[2022-04-05 03:26:44],
+        updated_at: ~N[2022-06-13 12:33:48]
+      },
+      %{
+        :ok,
+        %SimplifiedBankingApi.Accounts.Schemas.Account{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "accounts">,
+        balance: 110,
+        id: 5678,
+        inserted_at: ~N[2022-04-05 03:26:44],
+        updated_at: ~N[2022-06-13 12:33:48]
+      }
+    }
+  """
+  @spec transfer(origin_account :: integer(), amount :: integer(), destination_account :: integer()) ::
+          {:ok, origin :: Account.t(), destination :: Account.t()} | {:error, atom()}
+  def transfer(origin_account, amount, destination_account) do
+    Repo.transaction(fn ->
+      with {:origin, {:ok, %Account{} = origin}} <- {:origin, operate_account(origin_account, amount, :subtract)},
+      {:destination, {:ok, %Account{} = destination}} <- {:destination, operate_account(destination_account, amount, :sum)} do
+        {origin, destination}
+      else
+        {:origin, nil} ->
+          Logger.error("Origin account not found")
+          Repo.rollback(:not_found)
+
+        {:destination, nil} ->
+          Logger.error("Destination account not found")
+          Repo.rollback(:not_found)
+
+        {_, {:error, reason}} ->
+          Logger.error("""
+          Failed to transfer.
+          Origin account id: #{inspect(origin_account)}.
+          Destination account id: #{inspect(destination_account)}.
+          Reason: #{inspect(reason)}.
+          """)
+
+          Repo.rollback(reason)
+      end
+    end)
+    |> case do
+      {:ok, {origin, destination}} -> {:ok, origin, destination}
+      any -> any
+    end
   end
 
   defp operate_account(account_id, amount, operation) when operation in [:sum, :subtract] do
