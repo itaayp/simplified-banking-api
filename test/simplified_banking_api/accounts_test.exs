@@ -42,27 +42,28 @@ defmodule SimplifiedBankingApi.AccountsTest do
   end
 
   describe "transfer/3" do
-    test "transfer the amount from the origin_account to the destination_account" do
-      origin_account = insert(:account, balance: 100).id
-      destination_account = insert(:account, balance: 100).id
+    setup do
+      origin_account_id = insert(:account, balance: 100).id
+      destination_account_id = insert(:account, balance: 100).id
 
-      assert {:ok, origin, destination} = Accounts.transfer(origin_account, 30, destination_account)
+      {:ok, origin_account: origin_account_id, destination_account: destination_account_id}
+    end
+
+    test "transfer the amount from the origin_account to the destination_account", ctx do
+      assert {:ok, origin, destination} = Accounts.transfer(ctx.origin_account, 30, ctx.destination_account)
 
       assert 70 == origin.balance
       assert 130 == destination.balance
     end
 
-    test "fails if the origin account doesn't exist" do
-      destination_id = insert(:account).id
-      assert {:error, :not_found} = Accounts.transfer(123, 1000, destination_id)
+    test "fails if the origin account doesn't exist", ctx do
+      assert {:error, :not_found} = Accounts.transfer(123, 1000, ctx.destination_account)
     end
 
-    test "fails if the destination account doesn't exist" do
-      origin_id = insert(:account).id
-      assert {:error, :not_found} = Accounts.transfer(origin_id, 1000, 567)
+    test "fails if the destination account doesn't exist", ctx do
+      assert {:error, :not_found} = Accounts.transfer(ctx.origin_account, 1000, 567)
     end
   end
-
 
   describe "get_balance/1" do
     test "successfully get the account balance" do
