@@ -18,14 +18,14 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
         amount: 10
       }
 
-      assert [] == Repo.all(Account, [])
+      assert nil == Repo.get(Account, "1234")
 
       assert %{"destination" => %{"balance" => 10, "id" => "1234"}} =
                ctx.conn
                |> post("/event", params)
                |> json_response(201)
 
-      account = Repo.one(Account, id: "1234")
+      account = Repo.get(Account, "1234")
 
       assert 10 == account.balance
     end
@@ -36,14 +36,14 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
         destination: "1234"
       }
 
-      assert [] == Repo.all(Account, [])
+      assert nil == Repo.get(Account, "1234")
 
       assert %{"destination" => %{"balance" => 0, "id" => "1234"}} =
                ctx.conn
                |> post("/event", params)
                |> json_response(201)
 
-      account = Repo.one(Account, id: "1234")
+      account = Repo.get(Account, "1234")
 
       assert 0 == account.balance
     end
@@ -62,7 +62,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
                |> post("/event", params)
                |> json_response(201)
 
-      account = Repo.one(Account, id: account_id)
+      account = Repo.get(Account, account_id)
 
       assert 101 == account.balance
     end
@@ -83,7 +83,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
                |> post("/event", params)
                |> json_response(201)
 
-      account = Repo.one(Account, id: account_id)
+      account = Repo.get(Account, account_id)
 
       assert 40 == account.balance
     end
@@ -145,7 +145,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
     test "create a new account if the destination doesn't exist", %{origin: origin_id} = ctx do
       destination_id = "123"
 
-      assert 2 == Repo.aggregate(Account, :count)
+      assert nil == Repo.get(Account, "123")
 
       params = %{
         type: "transfer",
@@ -162,7 +162,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
                |> post("/event", params)
                |> json_response(201)
 
-      assert 3 == Repo.aggregate(Account, :count)
+      assert %Account{} = Repo.get(Account, "123")
     end
   end
 end
