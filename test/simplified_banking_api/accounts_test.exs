@@ -61,8 +61,18 @@ defmodule SimplifiedBankingApi.AccountsTest do
       assert {:error, :not_found} = Accounts.transfer(123, 1000, ctx.destination_account)
     end
 
-    test "fails if the destination account doesn't exist", ctx do
-      assert {:error, :not_found} = Accounts.transfer(ctx.origin_account, 1000, 567)
+    test "creates a new account if the destination account doesn't exist", ctx do
+      destination_id = "567123"
+
+      query = from a in Account, where: a.id == ^destination_id
+      assert false == Repo.exists?(query)
+
+      assert {:ok, origin, destination} = Accounts.transfer(ctx.origin_account, 99, destination_id)
+
+      assert true == Repo.exists?(query)
+
+      assert 1 == origin.balance
+      assert 99 == destination.balance
     end
   end
 
