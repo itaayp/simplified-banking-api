@@ -142,17 +142,27 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
              |> response(404)
     end
 
-    test "fails if the destination account doesn't exist'", ctx do
+    test "create a new account if the destination doesn't exist", %{origin: origin_id} = ctx do
+      destination_id = "123"
+
+      assert 2 == Repo.aggregate(Account, :count)
+
       params = %{
         type: "transfer",
-        origin: ctx.origin,
+        origin: origin_id,
         amount: 60,
-        destination: "123"
+        destination: destination_id
       }
 
-      assert ctx.conn
-             |> post("/event", params)
-             |> response(404)
+      assert %{
+               "origin" => %{"balance" => 40, "id" => origin_id},
+               "destination" => %{"balance" => 60, "id" => destination_id}
+             } ==
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(201)
+
+      assert 3 == Repo.aggregate(Account, :count)
     end
   end
 end

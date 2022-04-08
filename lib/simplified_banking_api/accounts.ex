@@ -140,17 +140,22 @@ defmodule SimplifiedBankingApi.Accounts do
     Repo.transaction(fn ->
       with {:origin, {:ok, %Account{} = origin}} <-
              {:origin, operate_account(origin_account, amount, :subtract)},
-           {:destination, {:ok, %Account{} = destination}} <-
-             {:destination, operate_account(destination_account, amount, :sum)} do
+           {:destination, {:ok, %Account{} = destination}, origin} <-
+             {:destination, operate_account(destination_account, amount, :sum), origin} do
         {origin, destination}
       else
         {:origin, nil} ->
           Logger.error("Origin account not found")
           Repo.rollback(:not_found)
 
-        {:destination, nil} ->
-          Logger.error("Destination account not found")
-          Repo.rollback(:not_found)
+        {:destination, nil, origin} ->
+          Logger.info("""
+          Destination account not found.
+          Creating a new account with id: #{destination_account}
+          """)
+
+          destination = create_account(destination_account, amount)
+          {origin, destination}
 
         {_, {:error, reason}} ->
           Logger.error("""
