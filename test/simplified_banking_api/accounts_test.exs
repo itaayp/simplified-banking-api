@@ -67,12 +67,14 @@ defmodule SimplifiedBankingApi.AccountsTest do
       query = from a in Account, where: a.id == ^destination_id
       assert false == Repo.exists?(query)
 
-      assert {:ok, origin, destination} = Accounts.transfer(ctx.origin_account, 99, destination_id)
+      assert {:ok, origin, destination} =
+               Accounts.transfer(ctx.origin_account, 99, destination_id)
 
       assert true == Repo.exists?(query)
 
       assert 1 == origin.balance
       assert 99 == destination.balance
+    end
   end
 
   describe "get_balance/1" do
