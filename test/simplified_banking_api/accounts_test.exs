@@ -8,13 +8,12 @@ defmodule SimplifiedBankingApi.AccountsTest do
 
   describe "deposit/2" do
     test "creates an account and deposit the amount when the account doesnt exists" do
-      assert [] == Repo.all(Account, [])
+      assert nil == Repo.get(Account, "1234")
 
       assert {:ok, _account} = Accounts.deposit("1234", 100)
 
-      [account] = Repo.all(Account, [])
+      account = Repo.get(Account, "1234")
 
-      assert "1234" == account.id
       assert 100 == account.balance
     end
 
@@ -100,7 +99,7 @@ defmodule SimplifiedBankingApi.AccountsTest do
       Accounts.reset_accounts_table()
 
       # the database is empty
-      assert [] == Repo.all(Account, [])
+      assert 0 == Repo.aggregate(Account, :count)
 
       # can create a new account with the same id that was previously used
       insert(:account, id: "1")
