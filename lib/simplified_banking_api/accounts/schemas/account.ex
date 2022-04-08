@@ -11,7 +11,7 @@ defmodule SimplifiedBankingApi.Accounts.Schemas.Account do
     :balance
   ]
 
-  @primary_key {:id, :integer, autogenerate: false}
+  @primary_key {:id, :string, autogenerate: false}
   schema "accounts" do
     field :balance, :integer, default: 0
 

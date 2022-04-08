@@ -10,11 +10,11 @@ defmodule SimplifiedBankingApi.AccountsTest do
     test "creates an account and deposit the amount when the account doesnt exists" do
       assert [] == Repo.all(Account, [])
 
-      assert {:ok, _account} = Accounts.deposit(1234, 100)
+      assert {:ok, _account} = Accounts.deposit("1234", 100)
 
       [account] = Repo.all(Account, [])
 
-      assert 1234 == account.id
+      assert "1234" == account.id
       assert 100 == account.balance
     end
 
@@ -37,7 +37,7 @@ defmodule SimplifiedBankingApi.AccountsTest do
     end
 
     test "fails if the account doesn't exist" do
-      assert {:error, :not_found} = Accounts.withdraw(123, 1000)
+      assert {:error, :not_found} = Accounts.withdraw("123", 1000)
     end
   end
 
@@ -58,11 +58,11 @@ defmodule SimplifiedBankingApi.AccountsTest do
     end
 
     test "fails if the origin account doesn't exist", ctx do
-      assert {:error, :not_found} = Accounts.transfer(123, 1000, ctx.destination_account)
+      assert {:error, :not_found} = Accounts.transfer("123", 1000, ctx.destination_account)
     end
 
     test "fails if the destination account doesn't exist", ctx do
-      assert {:error, :not_found} = Accounts.transfer(ctx.origin_account, 1000, 567)
+      assert {:error, :not_found} = Accounts.transfer(ctx.origin_account, 1000, "567")
     end
   end
 
@@ -80,7 +80,7 @@ defmodule SimplifiedBankingApi.AccountsTest do
 
   describe "reset_accounts_table/0" do
     test "resets all the database data" do
-      insert(:account, id: 1)
+      insert(:account, id: "1")
 
       insert_list(8, :account)
 
@@ -92,7 +92,7 @@ defmodule SimplifiedBankingApi.AccountsTest do
       assert [] == Repo.all(Account, [])
 
       # can create a new account with the same id that was previously used
-      insert(:account, id: 1)
+      insert(:account, id: "1")
     end
   end
 end

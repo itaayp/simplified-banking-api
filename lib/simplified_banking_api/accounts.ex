@@ -18,12 +18,12 @@ defmodule SimplifiedBankingApi.Accounts do
       %{:ok, %SimplifiedBankingApi.Accounts.Schemas.Account{
         __meta__: #Ecto.Schema.Metadata<:loaded, "accounts">,
         balance: 100,
-        id: 1234,
+        id: "1234",
         inserted_at: ~N[2022-04-05 03:26:44],
         updated_at: ~N[2022-04-05 03:26:44]
       }}
   """
-  @spec deposit(account_id :: integer(), amount :: integer()) ::
+  @spec deposit(account_id :: String.t(), amount :: integer()) ::
           {:ok, Account.t()} | {:error, atom()}
   def deposit(account_id, amount) do
     Repo.transaction(fn ->
@@ -74,12 +74,12 @@ defmodule SimplifiedBankingApi.Accounts do
       %{:ok, %SimplifiedBankingApi.Accounts.Schemas.Account{
         __meta__: #Ecto.Schema.Metadata<:loaded, "accounts">,
         balance: 90,
-        id: 1234,
+        id: "1234",
         inserted_at: ~N[2022-04-05 03:26:44],
         updated_at: ~N[2022-06-13 12:33:48]
       }}
   """
-  @spec withdraw(account_id :: integer(), amount :: integer()) ::
+  @spec withdraw(account_id :: String.t(), amount :: integer()) ::
           {:ok, Account.t()} | {:error, atom()}
   def withdraw(account_id, amount) do
     Repo.transaction(fn ->
@@ -115,7 +115,7 @@ defmodule SimplifiedBankingApi.Accounts do
         %SimplifiedBankingApi.Accounts.Schemas.Account{
         __meta__: #Ecto.Schema.Metadata<:loaded, "accounts">,
         balance: 90,
-        id: 1234,
+        id: "1234",
         inserted_at: ~N[2022-04-05 03:26:44],
         updated_at: ~N[2022-06-13 12:33:48]
       },
@@ -124,16 +124,16 @@ defmodule SimplifiedBankingApi.Accounts do
         %SimplifiedBankingApi.Accounts.Schemas.Account{
         __meta__: #Ecto.Schema.Metadata<:loaded, "accounts">,
         balance: 110,
-        id: 5678,
+        id: "5678",
         inserted_at: ~N[2022-04-05 03:26:44],
         updated_at: ~N[2022-06-13 12:33:48]
       }
     }
   """
   @spec transfer(
-          origin_account :: integer(),
+          origin_account :: String.t(),
           amount :: integer(),
-          destination_account :: integer()
+          destination_account :: String.t()
         ) ::
           {:ok, origin :: Account.t(), destination :: Account.t()} | {:error, atom()}
   def transfer(origin_account, amount, destination_account) do
@@ -194,7 +194,7 @@ defmodule SimplifiedBankingApi.Accounts do
       iex (1)> Accounts.get_balance(9999)
       {:error, :not_found}
   """
-  @spec get_balance(account_id :: integer()) :: {:ok, integer()} | {:error, :not_found}
+  @spec get_balance(account_id :: String.t()) :: {:ok, integer()} | {:error, :not_found}
   def get_balance(account_id) do
     Repo.transaction(fn ->
       case Repo.one(Account, id: account_id) do
