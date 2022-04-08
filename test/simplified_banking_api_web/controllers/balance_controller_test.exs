@@ -9,17 +9,17 @@ defmodule SimplifiedBankingApiWeb.BalanceControllerTest do
 
   describe "GET /balance" do
     test "succeds getting account balance", ctx do
-      insert(:account, id: 1, balance: 1000)
+      account_id = insert(:account, balance: 1000).id
 
       assert "1000" ==
                ctx.conn
-               |> get("/balance", %{account_id: 1})
+               |> get("/balance", %{account_id: account_id})
                |> response(200)
     end
 
     test "fails to get the balance if the account doesn't exist'", ctx do
       assert ctx.conn
-             |> get("/balance", %{account_id: 1})
+             |> get("/balance", %{account_id: "1"})
              |> response(404)
     end
   end

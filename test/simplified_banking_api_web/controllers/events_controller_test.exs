@@ -20,12 +20,12 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
 
       assert [] == Repo.all(Account, [])
 
-      assert %{"destination" => %{"balance" => 10, "id" => 1234}} =
+      assert %{"destination" => %{"balance" => 10, "id" => "1234"}} =
                ctx.conn
                |> post("/event", params)
                |> json_response(201)
 
-      account = Repo.one(Account, id: 1234)
+      account = Repo.one(Account, id: "1234")
 
       assert 10 == account.balance
     end
@@ -38,12 +38,12 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
 
       assert [] == Repo.all(Account, [])
 
-      assert %{"destination" => %{"balance" => 0, "id" => 1234}} =
+      assert %{"destination" => %{"balance" => 0, "id" => "1234"}} =
                ctx.conn
                |> post("/event", params)
                |> json_response(201)
 
-      account = Repo.one(Account, id: 1234)
+      account = Repo.one(Account, id: "1234")
 
       assert 0 == account.balance
     end
@@ -91,7 +91,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
     test "fails if the account doesn't exist'", ctx do
       params = %{
         type: "withdraw",
-        origin: 123,
+        origin: "123",
         amount: 60
       }
 
@@ -132,7 +132,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
     test "fails if the origin account doesn't exist'", ctx do
       params = %{
         type: "transfer",
-        origin: 123,
+        origin: "123",
         amount: 60,
         destination: ctx.destination
       }
@@ -147,7 +147,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
         type: "transfer",
         origin: ctx.origin,
         amount: 60,
-        destination: 123
+        destination: "123"
       }
 
       assert ctx.conn

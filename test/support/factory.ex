@@ -10,7 +10,7 @@ defmodule SimplifiedBankingApi.Factory do
   def account_factory do
     %Account{
       balance: 100,
-      id: sequence(:id, & &1),
+      id: sequence(:id, &"#{&1}"),
       inserted_at: ~N[2022-04-05 01:40:11],
       updated_at: ~N[2022-04-05 01:40:11]
     }
