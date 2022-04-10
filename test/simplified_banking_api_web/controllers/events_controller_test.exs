@@ -87,7 +87,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
         amount: 1200
       }
 
-      assert %{"error" => %{"destination" => "this field must contain only numbers"}} =
+      assert %{"error" => %{"destination" => "must contain only numbers"}} =
                ctx.conn
                |> post("/event", params)
                |> json_response(422)
@@ -112,7 +112,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
         amount: -1
       }
 
-      assert %{"error" => %{"amount" => "the amount must be greater or equals to zero"}} =
+      assert %{"error" => %{"amount" => "must be greater or equals to zero"}} =
                ctx.conn
                |> post("/event", params)
                |> json_response(422)
@@ -149,6 +149,57 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
       assert ctx.conn
              |> post("/event", params)
              |> response(404)
+    end
+
+    test "fails when the `amount` is a string", ctx do
+      params = %{
+        type: "withdraw",
+        origin: "134",
+        amount: "i'm not a number"
+      }
+
+      assert %{"error" => %{"amount" => "is invalid"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `origin` is not a string of numbers", ctx do
+      params = %{
+        type: "withdraw",
+        origin: "I'm not a number",
+        amount: 1200
+      }
+
+      assert %{"error" => %{"origin" => "must contain only numbers"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `origin` is missing", ctx do
+      params = %{
+        type: "withdraw",
+        amount: 1200
+      }
+
+      assert %{"error" => %{"origin" => "can't be blank"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `amount` is less than zero", ctx do
+      params = %{
+        type: "withdraw",
+        origin: "123",
+        amount: -1
+      }
+
+      assert %{"error" => %{"amount" => "must be greater or equals to zero"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
     end
   end
 

@@ -1,18 +1,18 @@
-defmodule SimplifiedBankingApi.Events.Inputs.DepositInput do
+defmodule SimplifiedBankingApi.Events.Inputs.WithdrawInput do
   @moduledoc """
-  Input validator to the deposit event.
+  Input validator to the withdraw event.
   """
   use Ecto.Schema
   import Ecto.Changeset
   import SimplifiedBankingApi.ChangesetValidation
 
-  @required [:type, :destination, :amount]
+  @required [:type, :origin, :amount]
 
   @derive Jason.Encoder
   embedded_schema do
     field :type, :string
-    field :destination, :string
-    field :amount, :integer, default: 0
+    field :origin, :string
+    field :amount, :integer
   end
 
   @doc false
@@ -20,9 +20,9 @@ defmodule SimplifiedBankingApi.Events.Inputs.DepositInput do
     model
     |> cast(params, @required)
     |> validate_required(@required)
-    |> validate_inclusion(:type, ["deposit"])
-    |> trim(:destination)
-    |> validate_account_id(:destination)
+    |> validate_inclusion(:type, ["withdraw"])
+    |> trim(:origin)
+    |> validate_account_id(:origin)
     |> validate_greater_or_equals_zero(:amount)
   end
 end
