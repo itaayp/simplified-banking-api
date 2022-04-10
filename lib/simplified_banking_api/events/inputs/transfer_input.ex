@@ -9,7 +9,6 @@ defmodule SimplifiedBankingApi.Events.Inputs.TransferInput do
 
   @required [:type, :origin, :amount, :destination]
 
-  @derive Jason.Encoder
   embedded_schema do
     field :type, :string
     field :origin, :string

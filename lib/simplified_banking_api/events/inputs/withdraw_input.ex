@@ -8,7 +8,6 @@ defmodule SimplifiedBankingApi.Events.Inputs.WithdrawInput do
 
   @required [:type, :origin, :amount]
 
-  @derive Jason.Encoder
   embedded_schema do
     field :type, :string
     field :origin, :string

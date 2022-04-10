@@ -6,7 +6,8 @@ defmodule SimplifiedBankingApiWeb.BalanceController do
   """
   use SimplifiedBankingApiWeb, :controller
 
-  alias SimplifiedBankingApi.Accounts
+  alias SimplifiedBankingApi.{Accounts, ChangesetValidation}
+  alias SimplifiedBankingApi.Balance.Inputs.GetBalanceInput
 
   action_fallback SimplifiedBankingApiWeb.FallbackController
 
@@ -14,11 +15,11 @@ defmodule SimplifiedBankingApiWeb.BalanceController do
   Gets the account balance
   """
   @spec get_balance(conn :: Plug.Conn.t(), params :: map()) :: Plug.Conn.t()
-  def get_balance(conn, %{"account_id" => account_id}) do
-    case Accounts.get_balance(account_id) do
-      {:ok, balance} ->
-        send_resp(conn, 200, "#{balance}")
-
+  def get_balance(conn, params) do
+    with {:ok, input} <- ChangesetValidation.cast_and_apply(GetBalanceInput, params),
+         {:ok, balance} <- Accounts.get_balance(input.account_id) do
+      send_resp(conn, 200, "#{balance}")
+    else
       error ->
         error
     end
