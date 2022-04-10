@@ -11,7 +11,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
   end
 
   describe "POST /event {type: 'deposit'}" do
-    test "succeds creating an account with balance", ctx do
+    test "succeeds creating an account with balance", ctx do
       params = %{
         type: "deposit",
         destination: "1234",
@@ -30,7 +30,7 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
       assert 10 == account.balance
     end
 
-    test "succeds creating an account without specifing the balance", ctx do
+    test "succeeds creating an account without specifing the balance", ctx do
       params = %{
         type: "deposit",
         destination: "1234"
@@ -65,6 +65,57 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
       account = Repo.get(Account, account_id)
 
       assert 101 == account.balance
+    end
+
+    test "fails when the `amount` is a string", ctx do
+      params = %{
+        type: "deposit",
+        destination: "134",
+        amount: "i'm not a number"
+      }
+
+      assert %{"error" => %{"amount" => "is invalid"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `destination` is not a string of numbers", ctx do
+      params = %{
+        type: "deposit",
+        destination: "I'm not a number",
+        amount: 1200
+      }
+
+      assert %{"error" => %{"destination" => "this field must contain only numbers"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `destination` is missing", ctx do
+      params = %{
+        type: "deposit",
+        amount: 1200
+      }
+
+      assert %{"error" => %{"destination" => "can't be blank"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `amount` is less than zero", ctx do
+      params = %{
+        type: "deposit",
+        destination: "123",
+        amount: -1
+      }
+
+      assert %{"error" => %{"amount" => "the amount must be greater or equals to zero"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
     end
   end
 
