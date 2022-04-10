@@ -266,5 +266,87 @@ defmodule SimplifiedBankingApiWeb.EventsControllerTest do
 
       assert %Account{} = Repo.get(Account, "123")
     end
+
+    test "fails when the `amount` is a string", ctx do
+      params = %{
+        type: "transfer",
+        origin: ctx.origin,
+        amount: "i'm not a number",
+        destination: ctx.destination
+      }
+
+      assert %{"error" => %{"amount" => "is invalid"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `origin` is not a string of numbers", ctx do
+      params = %{
+        type: "transfer",
+        origin: "I'm not a number",
+        amount: 1200,
+        destination: ctx.destination
+      }
+
+      assert %{"error" => %{"origin" => "must contain only numbers"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `destination` is not a string of numbers", ctx do
+      params = %{
+        type: "transfer",
+        origin: ctx.origin,
+        amount: 1200,
+        destination: "I'm not a number"
+      }
+
+      assert %{"error" => %{"destination" => "must contain only numbers"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `origin` is missing", ctx do
+      params = %{
+        type: "transfer",
+        amount: 1200,
+        destination: ctx.destination
+      }
+
+      assert %{"error" => %{"origin" => "can't be blank"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `destination` is missing", ctx do
+      params = %{
+        type: "transfer",
+        origin: ctx.origin,
+        amount: 1200
+      }
+
+      assert %{"error" => %{"destination" => "can't be blank"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
+
+    test "fails when the `amount` is less than zero", ctx do
+      params = %{
+        type: "transfer",
+        origin: "123",
+        amount: -1,
+        destination: ctx.destination
+      }
+
+      assert %{"error" => %{"amount" => "must be greater or equals to zero"}} =
+               ctx.conn
+               |> post("/event", params)
+               |> json_response(422)
+    end
   end
 end
