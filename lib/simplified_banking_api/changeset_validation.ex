@@ -42,12 +42,12 @@ defmodule SimplifiedBankingApi.ChangesetValidation do
     end)
   end
 
-  def validate_amount(changeset, field) do
+  def validate_greater_or_equals_zero(changeset, field) do
     Changeset.validate_change(changeset, field, fn ^field, value ->
       if value >= 0 do
         []
       else
-        [{field, "the amount must be greater or equals to zero"}]
+        [{field, "must be greater or equals to zero"}]
       end
     end)
   end
@@ -57,7 +57,7 @@ defmodule SimplifiedBankingApi.ChangesetValidation do
       if only_numbers?(value) do
         []
       else
-        [{field, "this field must contain only numbers"}]
+        [{field, "must contain only numbers"}]
       end
     end)
   end

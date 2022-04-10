@@ -23,6 +23,6 @@ defmodule SimplifiedBankingApi.Events.Inputs.DepositInput do
     |> validate_inclusion(:type, ["deposit"])
     |> trim(:destination)
     |> validate_account_id(:destination)
-    |> validate_amount(:amount)
+    |> validate_greater_or_equals_zero(:amount)
   end
 end
