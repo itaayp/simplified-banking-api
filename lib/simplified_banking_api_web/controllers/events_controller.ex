@@ -6,8 +6,8 @@ defmodule SimplifiedBankingApiWeb.EventsController do
   """
   use SimplifiedBankingApiWeb, :controller
 
-  alias SimplifiedBankingApi.Accounts
-
+  alias SimplifiedBankingApi.{Accounts, ChangesetValidation}
+  alias SimplifiedBankingApi.Events.Inputs.DepositInput
   alias SimplifiedBankingApiWeb.AccountsView
 
   action_fallback SimplifiedBankingApiWeb.FallbackController
@@ -20,14 +20,14 @@ defmodule SimplifiedBankingApiWeb.EventsController do
   - transfer
   """
   @spec handle_event(conn :: Plug.Conn.t(), params :: map()) :: Plug.Conn.t()
-  def handle_event(conn, %{"type" => "deposit", "destination" => account_id} = params) do
-    case Accounts.deposit(account_id, Map.get(params, "amount", 0)) do
-      {:ok, account} ->
-        conn
-        |> put_view(AccountsView)
-        |> put_status(201)
-        |> render("deposit.json", %{account: account})
-
+  def handle_event(conn, %{"type" => "deposit"} = params) do
+    with {:ok, input} <- ChangesetValidation.cast_and_apply(DepositInput, params),
+         {:ok, account} <- Accounts.deposit(input.destination, Map.get(input, :amount, 0)) do
+      conn
+      |> put_view(AccountsView)
+      |> put_status(201)
+      |> render("deposit.json", %{account: account})
+    else
       error ->
         error
     end

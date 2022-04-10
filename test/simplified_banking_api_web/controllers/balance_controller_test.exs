@@ -8,7 +8,7 @@ defmodule SimplifiedBankingApiWeb.BalanceControllerTest do
   end
 
   describe "GET /balance" do
-    test "succeds getting account balance", ctx do
+    test "succeeds getting account balance", ctx do
       account_id = insert(:account, balance: 1000).id
 
       assert "1000" ==
