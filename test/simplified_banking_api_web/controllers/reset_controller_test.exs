@@ -11,7 +11,7 @@ defmodule SimplifiedBankingApiWeb.ResetControllerTest do
   end
 
   describe "POST /reset" do
-    test "succeds reseting the API", ctx do
+    test "succeeds reseting the API", ctx do
       insert_list(7, :account)
 
       assert 7 == Repo.aggregate(Account, :count)
