@@ -7,7 +7,7 @@ defmodule SimplifiedBankingApiWeb.EventsController do
   use SimplifiedBankingApiWeb, :controller
 
   alias SimplifiedBankingApi.{Accounts, ChangesetValidation}
-  alias SimplifiedBankingApi.Events.Inputs.DepositInput
+  alias SimplifiedBankingApi.Events.Inputs.{DepositInput, WithdrawInput}
   alias SimplifiedBankingApiWeb.AccountsView
 
   action_fallback SimplifiedBankingApiWeb.FallbackController
@@ -33,14 +33,14 @@ defmodule SimplifiedBankingApiWeb.EventsController do
     end
   end
 
-  def handle_event(conn, %{"type" => "withdraw", "origin" => _, "amount" => _} = params) do
-    case Accounts.withdraw(Map.get(params, "origin"), Map.get(params, "amount")) do
-      {:ok, account} ->
-        conn
-        |> put_view(AccountsView)
-        |> put_status(201)
-        |> render("withdraw.json", %{account: account})
-
+  def handle_event(conn, %{"type" => "withdraw"} = params) do
+    with {:ok, input} <- ChangesetValidation.cast_and_apply(WithdrawInput, params),
+         {:ok, account} <- Accounts.withdraw(input.origin, Map.get(input, :amount)) do
+      conn
+      |> put_view(AccountsView)
+      |> put_status(201)
+      |> render("withdraw.json", %{account: account})
+    else
       error ->
         error
     end
