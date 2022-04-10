@@ -10,7 +10,7 @@ defmodule SimplifiedBankingApiWeb.FallbackController do
   def call(conn, {:error, reason}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> put_view(BankingApiWeb.ErrorView)
+    |> put_view(SimplifiedBankingApiWeb.ErrorView)
     |> render("error_reason.json", reason: reason)
   end
 end
