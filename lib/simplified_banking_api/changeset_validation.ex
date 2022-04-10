@@ -1,4 +1,8 @@
 defmodule SimplifiedBankingApi.ChangesetValidation do
+  @moduledoc """
+  Helper functions to validate changeset.
+  """
+
   alias Ecto.Changeset
 
   @typedoc "Possible changeset responses"
