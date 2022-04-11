@@ -10,11 +10,11 @@ Aqui você encontrará uma API para bancos, onde é possível:
 
 ## Documentações
 ### Documentação da API
-
 #### Apagar informações do banco de dados (para fins de teste)
 - **endpoint**: POST /reset
 - **Retorno**: 200 OK
 
+---
 #### Cria uma conta bancária
 Para criar uma conta bancária, é necessário que o valor de `destination` não esteja em uso por nenhuma outra conta.
 
@@ -26,40 +26,48 @@ Para criar uma conta bancária, é necessário que o valor de `destination` não
 - **endpoint**: POST /event {"type":"deposit", "destination":"107"}
 - **Retorno**: 201 {"destination": {"id":"107", "balance":0}}
 
+---
 #### Faz um depósito em uma conta existente
 - **endpoint**: POST /event {"type":"deposit", "destination":"100", "amount":10}
 - **Retorno**: 201 {"destination": {"id":"100", "balance":20}}
 
+---
 #### Busca o saldo de uma conta inexistente
 - **endpoint**: GET /balance?account_id=1234
 - **Retorno**: 404 0
 
+---
 #### Busca o saldo de uma conta existente
 - **endpoint**: GET /balance?account_id=100
 - **Retorno**: 200 20
 
+---
 #### Saque de uma conta inexistente
 - **endpoint**: POST /event {"type":"withdraw", "origin":"200", "amount":10}
 - **Retorno**: 404 0
 
+---
 #### Saque de uma conta existente
 - **endpoint**: POST /event {"type":"withdraw", "origin":"100", "amount":5}
 - **Retorno**: 201 {"origin": {"id":"100", "balance":15}}
 
+---
 #### Transferência a partir de conta de origem existente
 Não é permitido transferir a partir de `origin.id` inexistentes, porém, se o campo `destination.id` for inexistemte, a transferência será executada com sucesso e uma nova conta com o valor de `destination.id` será criada.
 - **endpoint**: POST /event {"type":"transfer", "origin":"100", "amount":15, "destination":"300"}
 - **Retorno**: 201 {"origin": {"id":"100", "balance":0}, "destination": {"id":"300", "balance":15}}
 
+---
 #### Transferência a partir de conta de origem inexistente
 - **endpoint**: POST /event {"type":"transfer", "origin":"200", "amount":15, "destination":"300"}
 - **Retorno**: 404 0
 
+---
 ### Documentação do código (Documentação dos módulos e funções)
 
 Por ora, ainda não subi a documentação do código em um endereço público. 
 Mas enquanto isso, você pode encontrá-la seguindo os seguintes passos
- 1. Siga a documentação de setup para fazer o download, intalar o Elixir e Phoenix na sua máquina
+ 1. Siga a [`documentação de setup`](https://github.com/itaayp/simplified-banking-api/edit/main/README.md#documenta%C3%A7%C3%A3o-de-setup) para clonar o projeto, e intalar Elixir e Phoenix na sua máquina.
  2. Abra o terminal e acesse o diretório do projeto
  3. Rode o comando `mix deps.get`
  4. Rode o comando `mix docs`
