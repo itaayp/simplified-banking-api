@@ -67,7 +67,7 @@ Não é permitido transferir a partir de `origin.id` inexistentes, porém, se o 
 
 Por ora, ainda não subi a documentação do código em um endereço público. 
 Mas enquanto isso, você pode encontrá-la seguindo os seguintes passos
- 1. Siga a [`documentação de setup`](https://github.com/itaayp/simplified-banking-api/edit/main/README.md#documenta%C3%A7%C3%A3o-de-setup) para clonar o projeto, e intalar Elixir e Phoenix na sua máquina.
+ 1. Siga a [`documentação de setup`](https://github.com/itaayp/simplified-banking-api#documenta%C3%A7%C3%A3o-de-setup) para clonar o projeto, e intalar Elixir e Phoenix na sua máquina.
  2. Abra o terminal e acesse o diretório do projeto
  3. Rode o comando `mix deps.get`
  4. Rode o comando `mix docs`
